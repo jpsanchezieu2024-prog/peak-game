@@ -103,39 +103,67 @@ async function getTopScores(limit = 25) {
 async function getNearbyScores(myScore, radius = 5) {
   if (!firebaseReady) return [];
   try {
+    // Get top 2 globally
+    const topSnap = await db.collection(SCORES_COLLECTION)
+      .orderBy('score', 'desc')
+      .limit(2)
+      .get();
+
+    const topEntries = topSnap.docs.map((d, i) => ({
+      rank:  i + 1,
+      name:  d.data().name,
+      score: d.data().score,
+      isYou: false,
+    }));
+
     // Count how many scores are strictly higher = your rank
     const higherSnap = await db.collection(SCORES_COLLECTION)
       .where('score', '>', myScore)
       .get();
     const myRank = higherSnap.size + 1;
 
-    // Get 2 scores strictly above mine
-    const above = await db.collection(SCORES_COLLECTION)
+    // If you are in the top 2 already, just show top 5
+    if (myRank <= 2) {
+      const top5Snap = await db.collection(SCORES_COLLECTION)
+        .orderBy('score', 'desc')
+        .limit(5)
+        .get();
+
+      return top5Snap.docs.map((d, i) => ({
+        rank:  i + 1,
+        name:  d.data().name,
+        score: d.data().score,
+        isYou: d.data().score === myScore,
+      }));
+    }
+
+    // Get 1 score strictly above mine
+    const aboveSnap = await db.collection(SCORES_COLLECTION)
       .orderBy('score', 'desc')
       .where('score', '>', myScore)
-      .limit(2)
+      .limit(1)
       .get();
 
-    // Get 2 scores strictly below mine
-    const below = await db.collection(SCORES_COLLECTION)
+    const aboveEntry = aboveSnap.docs.length > 0 ? {
+      rank:  myRank - 1,
+      name:  aboveSnap.docs[0].data().name,
+      score: aboveSnap.docs[0].data().score,
+      isYou: false,
+    } : null;
+
+    // Get 1 score strictly below mine
+    const belowSnap = await db.collection(SCORES_COLLECTION)
       .orderBy('score', 'desc')
       .where('score', '<', myScore)
-      .limit(2)
+      .limit(1)
       .get();
 
-    const aboveEntries = above.docs.reverse().map((d, i) => ({
-      rank:  myRank - (above.docs.length - i),
-      name:  d.data().name,
-      score: d.data().score,
+    const belowEntry = belowSnap.docs.length > 0 ? {
+      rank:  myRank + 1,
+      name:  belowSnap.docs[0].data().name,
+      score: belowSnap.docs[0].data().score,
       isYou: false,
-    }));
-
-    const belowEntries = below.docs.map((d, i) => ({
-      rank:  myRank + 1 + i,
-      name:  d.data().name,
-      score: d.data().score,
-      isYou: false,
-    }));
+    } : null;
 
     const youEntry = {
       rank:  myRank,
@@ -144,7 +172,13 @@ async function getNearbyScores(myScore, radius = 5) {
       isYou: true,
     };
 
-    return [...aboveEntries, youEntry, ...belowEntries];
+    // Build final list: top 2, then above, you, below
+    const result = [...topEntries];
+    if (aboveEntry && aboveEntry.rank > 2) result.push(aboveEntry);
+    result.push(youEntry);
+    if (belowEntry) result.push(belowEntry);
+
+    return result;
 
   } catch (err) {
     console.error('[PEAK] getNearbyScores error:', err);
