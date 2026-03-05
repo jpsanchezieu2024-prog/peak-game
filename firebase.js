@@ -16,12 +16,12 @@
 //  FIREBASE CONFIG — Replace with your own values
 // ──────────────────────────────────────────────────────
 const firebaseConfig = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey: "AIzaSyDYWee7HCorXV2mzij7EyrFN5nUNzPWfjo",
+  authDomain: "peak-game.firebaseapp.com",
+  projectId: "peak-game",
+  storageBucket: "peak-game.firebasestorage.app",
+  messagingSenderId: "877385712555",
+  appId: "1:877385712555:web:81485bd5477ac2b21ac8ee"
 };
 
 // ──────────────────────────────────────────────────────
@@ -61,18 +61,6 @@ async function submitScore(name, score) {
 
   if (typeof name !== 'string' || name.length < 1 || name.length > 20) throw new Error('Bad name');
 
-  // Basic rate-limit: check if this exact name+score exists from last 60s
-  const oneMinuteAgo = new Date(Date.now() - 60_000);
-  const existing = await db.collection(SCORES_COLLECTION)
-    .where('name',  '==', name)
-    .where('score', '==', score)
-    .where('timestamp', '>', oneMinuteAgo)
-    .limit(1)
-    .get();
-
-  if (!existing.empty) {
-    throw new Error('Duplicate submission — please wait a moment.');
-  }
 
   // Write to Firestore
   await db.collection(SCORES_COLLECTION).add({
