@@ -430,7 +430,7 @@ body {
   left: 0;
   right: 0;
   display: none;
-  height: 120px;
+  height: 250px;
   z-index: 200;
   pointer-events: none;
 }
@@ -477,7 +477,7 @@ body {
 
 .go-eyebrow {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 30px;
   letter-spacing: 0.3em;
   color: var(--danger);
   text-transform: uppercase;
@@ -595,9 +595,9 @@ body {
 
 .submit-status {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 30px;
   letter-spacing: 0.08em;
-  color: var(--success);
+  color: #04A94F;
   min-height: 18px;
   text-align: center;
 }
@@ -853,3 +853,56 @@ body {
   object-fit: contain;
   margin-bottom: 4px;
 }
+
+
+.hud-home-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 300;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border-lit);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+}
+
+.hud-home-btn:hover {
+  background: rgba(0,229,255,0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+
+.lb-table tbody tr.lb-hidden-row {
+  display: none;
+}
+
+.lb-expand-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--border-lit);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lb-expand-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
