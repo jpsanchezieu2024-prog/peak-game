@@ -1,0 +1,55 @@
+// ═══════════════════════════════════════════════════════
+// PEAK: Rise to the Top — Firestore Security Rules
+// File: firestore.rules
+//
+// HOW TO DEPLOY:
+//   Option A (Firebase Console):
+//     1. Go to Firebase Console → Firestore → Rules tab
+//     2. Copy/paste everything below into the editor
+//     3. Click Publish
+//
+//   Option B (Firebase CLI):
+//     firebase deploy --only firestore:rules
+// ═══════════════════════════════════════════════════════
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── SCORES COLLECTION ──────────────────────────────
+    match /scores/{scoreId} {
+
+      // Anyone can READ scores (for leaderboard)
+      allow read: if true;
+
+      // WRITE rules — strict validation
+      allow create: if
+        // Require all expected fields
+        request.resource.data.keys().hasAll(['name', 'score', 'timestamp']) &&
+
+        // Name: string, 1–20 chars
+        request.resource.data.name is string &&
+        request.resource.data.name.size() >= 1 &&
+        request.resource.data.name.size() <= 20 &&
+
+        // Score: integer in valid range
+        request.resource.data.score is int &&
+        request.resource.data.score >= 0 &&
+        request.resource.data.score <= 99999 &&
+
+        // Timestamp must be server timestamp (prevents backdating)
+        request.resource.data.timestamp == request.time &&
+
+        // No extra fields (prevents injection)
+        request.resource.data.keys().size() == 3;
+
+      // Nobody can update or delete scores
+      allow update, delete: if false;
+    }
+
+    // ─── All other collections: deny by default ──────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

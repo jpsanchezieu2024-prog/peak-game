@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="PEAK: Rise to the Top — Climb higher, go further. A vertical platformer game." />
+  <meta property="og:title" content="PEAK: Rise to the Top" />
+  <meta property="og:description" content="How high can you climb? Play PEAK and compete for the top." />
+  <meta property="og:type" content="website" />
+  <title>PEAK: Rise to the Top</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!--  START SCREEN                                  -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div id="start-screen" class="screen active">
+    <div class="screen-bg-grid"></div>
+    <div class="start-content">
+      <div class="logo-lockup">
+        <img src="logo.png" alt="Student Government Logo" class="sg-logo" />
+        <div class="peak-badge">Built Different, Led Better</div>
+        <h1 class="game-title">PEAK</h1>
+        <p class="game-subtitle">Rise to the Top</p>
+        <div class="title-divider"></div>
+        <p class="game-tagline">Climb higher. Go further. Leave your mark.</p>
+      </div>
+
+      <div class="controls-preview">
+        <div class="ctrl-item">
+          <span class="ctrl-key">← →</span>
+          <span class="ctrl-label">Move</span>
+        </div>
+        <div class="ctrl-sep"></div>
+        <div class="ctrl-item">
+          <span class="ctrl-key">AUTO</span>
+          <span class="ctrl-label">Jump on land</span>
+        </div>
+        <div class="ctrl-sep"></div>
+        <div class="ctrl-item">
+          <span class="ctrl-key">TOUCH</span>
+          <span class="ctrl-label">Tap sides</span>
+        </div>
+      </div>
+
+      <div class="platform-legend">
+        <div class="legend-item">
+          <div class="legend-plat static-plat"></div>
+          <span>Solid</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-plat moving-plat"></div>
+          <span>Moving</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-plat crumble-plat"></div>
+          <span>Crumbling</span>
+        </div>
+      </div>
+
+      <button id="start-btn" class="btn-primary">START CLIMBING</button>
+
+      <p class="version-tag">Built for IE</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!--  GAME SCREEN                                   -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div id="game-screen" class="screen">
+    <div id="game-hud">
+      <div class="hud-left">
+        <span class="hud-label">MOMENTUM</span>
+        <span id="hud-score">0</span>
+      </div>
+      <div class="hud-center">
+        <span class="peak-watermark">PEAK</span>
+      </div>
+      <div class="hud-right">
+        <span class="hud-label">BEST</span>
+        <span id="hud-best">0</span>
+      </div>
+    </div>
+
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Mobile touch controls -->
+    <div id="touch-controls">
+      <div id="touch-left" class="touch-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </div>
+      <div id="touch-right" class="touch-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!--  GAME OVER SCREEN                              -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div id="gameover-screen" class="screen">
+    <div class="screen-bg-grid"></div>
+    <div class="gameover-content">
+      <div class="go-header">
+        <p class="go-eyebrow">GAME OVER</p>
+        <h2 class="go-score-label">YOUR MOMENTUM</h2>
+        <div class="go-score-display">
+          <span id="go-score">0</span>
+        </div>
+        <div id="go-rank-badge" class="rank-badge hidden">
+          <span class="rank-label">NEW BEST!</span>
+        </div>
+      </div>
+
+      <div id="share-box" class="share-box">
+        <p id="share-text" class="share-text"></p>
+        <button id="copy-btn" class="btn-secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Copy & Share
+        </button>
+      </div>
+
+      <div class="nickname-form" id="nickname-form">
+        <p class="form-label">Submit your score to the leaderboard:</p>
+        <input type="text" id="nickname-input" class="nickname-input" placeholder="Enter your name..." maxlength="20" autocomplete="off" />
+        <button id="submit-score-btn" class="btn-primary">SUBMIT SCORE</button>
+        <p id="submit-status" class="submit-status"></p>
+        <button id="play-again-btn" class="btn-outline">PLAY AGAIN</button>
+      </div>
+
+      <div id="nearby-players" class="nearby-players hidden">
+        <p class="nearby-title">— PLAYERS AROUND YOU —</p>
+        <div id="nearby-list"></div>
+      </div>
+
+      <div class="go-actions">
+        <button id="go-leaderboard-btn" class="btn-ghost">VIEW LEADERBOARD ↓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!--  LEADERBOARD SECTION                           -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="leaderboard-section">
+    <div class="lb-inner">
+      <div class="lb-header">
+        <h2 class="lb-title">LEADERBOARD</h2>
+        <p class="lb-subtitle">Top 25 Climbers</p>
+        <button id="refresh-lb-btn" class="btn-ghost-sm">↻ Refresh</button>
+      </div>
+
+      <div id="lb-table-wrap">
+        <div id="lb-loading" class="lb-loading">Loading scores...</div>
+        <table id="lb-table" class="lb-table hidden">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Momentum</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="lb-body"></tbody>
+        </table>
+        <p id="lb-empty" class="lb-empty hidden">No scores yet. Be the first to climb!</p>
+      </div>
+
+      <div class="lb-footer">
+        <span class="peak-badge-sm">PEAK · Student Government</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
