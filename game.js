@@ -32,10 +32,10 @@ const C = {
   playerGlow:  'rgba(91,26,26,0.45)',
   playerShade: '#3a0f0f',
 
-  platStatic:  '#ff5a5f',
-  platMove:    '#8b5cf6',
-  platCrumble: '#f59e0b',
-  platCrumbleWarn: '#ff2d55',
+  platStatic:  '#4a9eff',
+  platMove:    '#a855f7',
+  platCrumble: '#FF5C00',
+  platCrumbleWarn: 'rgba(0,0,0,0.05)',
 
   shadow:      'rgba(0,0,0,0.35)',
   particle:    '#ffd166',
