@@ -663,11 +663,10 @@ function copyShareText() {
     const btn      = document.getElementById('copy-btn');
 
     // Use native share sheet if available (mobile + modern desktop)
-    if (navigator.share) {
+  if (navigator.share) {
       navigator.share({
         title: 'PEAK: Rise to the Top',
-        text:  shareMsg,
-        url:   'https://peak-game-rho.vercel.app/',
+        text:  copyMsg,
       }).catch(() => {
         // User dismissed or share failed — silently ignore
       });
