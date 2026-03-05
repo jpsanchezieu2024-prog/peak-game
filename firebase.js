@@ -102,31 +102,29 @@ async function getTopScores(limit = 25) {
 // ──────────────────────────────────────────────────────
 async function getNearbyScores(myScore, radius = 5) {
   if (!firebaseReady) return [];
-
   try {
-    // Count how many scores are strictly higher than mine
+    // Count how many scores are strictly higher = your rank
     const higherSnap = await db.collection(SCORES_COLLECTION)
       .where('score', '>', myScore)
       .get();
-
     const myRank = higherSnap.size + 1;
 
-    // Get scores just above mine
+    // Get 2 scores strictly above mine
     const above = await db.collection(SCORES_COLLECTION)
       .orderBy('score', 'desc')
       .where('score', '>', myScore)
       .limit(2)
       .get();
 
-    // Get scores at or below mine
+    // Get 2 scores strictly below mine
     const below = await db.collection(SCORES_COLLECTION)
       .orderBy('score', 'desc')
-      .where('score', '<=', myScore)
-      .limit(3)
+      .where('score', '<', myScore)
+      .limit(2)
       .get();
 
-    const aboveEntries = above.docs.map((d, i) => ({
-      rank: myRank - above.docs.length + i,
+    const aboveEntries = above.docs.reverse().map((d, i) => ({
+      rank:  myRank - (above.docs.length - i),
       name:  d.data().name,
       score: d.data().score,
       isYou: false,
@@ -139,7 +137,6 @@ async function getNearbyScores(myScore, radius = 5) {
       isYou: false,
     }));
 
-    // Insert the current player at their exact rank
     const youEntry = {
       rank:  myRank,
       name:  'YOU',
@@ -147,15 +144,13 @@ async function getNearbyScores(myScore, radius = 5) {
       isYou: true,
     };
 
-    const combined = [...aboveEntries, youEntry, ...belowEntries];
-    return combined.slice(0, 5);
+    return [...aboveEntries, youEntry, ...belowEntries];
 
   } catch (err) {
     console.error('[PEAK] getNearbyScores error:', err);
     return [];
   }
 }
-
 // ──────────────────────────────────────────────────────
 //  MOCK SCORES (shown when Firebase not configured)
 // ──────────────────────────────────────────────────────
