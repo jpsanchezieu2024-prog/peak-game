@@ -139,7 +139,7 @@ async function getNearbyScores(myScore, radius = 5) {
 
     // Get 1 score strictly above mine
     const aboveSnap = await db.collection(SCORES_COLLECTION)
-      .orderBy('score', 'desc')
+      .orderBy('score', 'asc')
       .where('score', '>', myScore)
       .limit(1)
       .get();
