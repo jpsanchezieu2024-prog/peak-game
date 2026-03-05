@@ -600,6 +600,24 @@ const BANDS = [
   // ──────────────────────────────────────────────────────
   //  GAME OVER
   // ──────────────────────────────────────────────────────
+function animateScore(finalScore) {
+    const el       = document.getElementById('go-score');
+    const duration = Math.min(1200, 600 + finalScore * 0.3);
+    const start    = performance.now();
+
+    function tick(now) {
+      const elapsed  = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const eased    = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(eased * finalScore);
+      if (progress < 1) requestAnimationFrame(tick);
+      else el.textContent = finalScore;
+    }
+
+    requestAnimationFrame(tick);
+  }
+
 function gameOver() {
     running = false;
     cancelAnimationFrame(frameId);
@@ -611,7 +629,7 @@ function gameOver() {
     }
 
     // Populate game over screen
-    document.getElementById('go-score').textContent = score;
+    animateScore(score);
 
     const isNewBest = (score >= bestScore && score > 0);
     const badge = document.getElementById('go-rank-badge');
@@ -631,7 +649,7 @@ function gameOver() {
     document.querySelector('.form-label').style.display      = '';
     document.getElementById('nickname-form').classList.remove('hidden');
     document.getElementById('nearby-players').classList.add('hidden');
-
+    
     showScreen('gameover-screen');
     loadNearbyPlayers(score);
   }
@@ -640,17 +658,30 @@ function gameOver() {
   //  SHARE
   // ──────────────────────────────────────────────────────
 function copyShareText() {
-    const displayMsg = `🔥 I reached ${score} Momentum in PEAK: Rise to the Top. Can you beat me?`;
-    const copyMsg    = `${displayMsg} https://peak-game-rho.vercel.app/`;
-    const btn = document.getElementById('copy-btn');
+    const shareMsg = `🔥 I reached ${score} Momentum in PEAK: Rise to the Top. Can you beat me?`;
+    const copyMsg  = `${shareMsg} https://peak-game-rho.vercel.app/`;
+    const btn      = document.getElementById('copy-btn');
 
+    // Use native share sheet if available (mobile + modern desktop)
+    if (navigator.share) {
+      navigator.share({
+        title: 'PEAK: Rise to the Top',
+        text:  shareMsg,
+        url:   'https://peak-game-rho.vercel.app/',
+      }).catch(() => {
+        // User dismissed or share failed — silently ignore
+      });
+      return;
+    }
+
+    // Fallback: copy to clipboard
     if (navigator.clipboard) {
       navigator.clipboard.writeText(copyMsg).then(() => {
         btn.classList.add('copy-feedback');
         btn.textContent = '✓ Copied!';
         setTimeout(() => {
           btn.classList.remove('copy-feedback');
-          btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy & Share`;
+          btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Share Your Score 🔥`;
         }, 2000);
       });
     } else {
@@ -663,7 +694,7 @@ function copyShareText() {
       document.execCommand('copy');
       document.body.removeChild(el);
       btn.textContent = '✓ Copied!';
-      setTimeout(() => { btn.textContent = 'Copy & Share'; }, 2000);
+      setTimeout(() => { btn.textContent = 'Share Your Score 🔥'; }, 2000);
     }
   }
 
