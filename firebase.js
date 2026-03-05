@@ -104,56 +104,52 @@ async function getNearbyScores(myScore, radius = 5) {
   if (!firebaseReady) return [];
 
   try {
-    // Get scores around mine
-    const above = await db.collection(SCORES_COLLECTION)
-      .orderBy('score', 'asc')
-      .where('score', '>=', myScore)
-      .limit(radius)
-      .get();
-
-    const below = await db.collection(SCORES_COLLECTION)
-      .orderBy('score', 'desc')
-      .where('score', '<', myScore)
-      .limit(radius)
-      .get();
-
-    const aboveEntries = above.docs.map(d => ({ name: d.data().name, score: d.data().score }));
-    const belowEntries = below.docs.map(d => ({ name: d.data().name, score: d.data().score }));
-
-    // Combine and sort
-    const all = [...belowEntries, ...aboveEntries].sort((a, b) => b.score - a.score);
-
-    // Get global rank for context
-    const rankSnap = await db.collection(SCORES_COLLECTION)
+    // Count how many scores are strictly higher than mine
+    const higherSnap = await db.collection(SCORES_COLLECTION)
       .where('score', '>', myScore)
       .get();
-    const myRankOffset = rankSnap.size + 1;
 
-    // Build output with ranks
-    const result = [];
-    // Find closest to myScore
-    let closestDist = Infinity;
-    let closestIdx  = -1;
-    all.forEach((e, i) => {
-      const dist = Math.abs(e.score - myScore);
-      if (dist < closestDist) { closestDist = dist; closestIdx = i; }
-    });
+    const myRank = higherSnap.size + 1;
 
-    all.slice(0, 5).forEach((e, i) => {
-      result.push({
-        rank:   myRankOffset - 2 + i,  // approximate rank
-        name:   e.name,
-        score:  e.score,
-        isYou:  i === closestIdx && closestDist < 10,
-      });
-    });
+    // Get scores just above mine
+    const above = await db.collection(SCORES_COLLECTION)
+      .orderBy('score', 'desc')
+      .where('score', '>', myScore)
+      .limit(2)
+      .get();
 
-    // Insert "you" entry if not already there
-    const youEntry = { rank: myRankOffset, name: 'YOU', score: myScore, isYou: true };
-    const hasYou = result.some(r => r.isYou);
-    if (!hasYou) result.splice(Math.min(2, result.length), 0, youEntry);
+    // Get scores at or below mine
+    const below = await db.collection(SCORES_COLLECTION)
+      .orderBy('score', 'desc')
+      .where('score', '<=', myScore)
+      .limit(3)
+      .get();
 
-    return result.slice(0, 5);
+    const aboveEntries = above.docs.map((d, i) => ({
+      rank: myRank - above.docs.length + i,
+      name:  d.data().name,
+      score: d.data().score,
+      isYou: false,
+    }));
+
+    const belowEntries = below.docs.map((d, i) => ({
+      rank:  myRank + 1 + i,
+      name:  d.data().name,
+      score: d.data().score,
+      isYou: false,
+    }));
+
+    // Insert the current player at their exact rank
+    const youEntry = {
+      rank:  myRank,
+      name:  'YOU',
+      score: myScore,
+      isYou: true,
+    };
+
+    const combined = [...aboveEntries, youEntry, ...belowEntries];
+    return combined.slice(0, 5);
+
   } catch (err) {
     console.error('[PEAK] getNearbyScores error:', err);
     return [];
