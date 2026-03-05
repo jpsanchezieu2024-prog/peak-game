@@ -11,9 +11,9 @@
   // ──────────────────────────────────────────────────────
   const CANVAS_W = 480;
   const CANVAS_H = 600;
-  const GRAVITY   = 1.5;
-  const JUMP_VEL  = -30;
-  const MOVE_SPD  = 15;
+  const GRAVITY   = 1.75;
+  const JUMP_VEL  = -35;
+  const MOVE_SPD  = 20;
   const PLAT_H    = 12;
   const PLAYER_W  = 70;
   const PLAYER_H  = 90;
