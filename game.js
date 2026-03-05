@@ -43,11 +43,11 @@ const C = {
 };
 
   // Difficulty bands
-  const BANDS = [
-    { threshold: 0,   gap: [90, 140], moving: 0.0, crumble: 0.05, platW: [100, 160] },
-    { threshold: 300, gap: [110, 170], moving: 0.15, crumble: 0.12, platW: [80, 140]  },
-    { threshold: 600, gap: [130, 195], moving: 0.25, crumble: 0.18, platW: [70, 130]  },
-    { threshold: 800, gap: [145, 210], moving: 0.35, crumble: 0.22, platW: [60, 120]  },
+const BANDS = [
+    { threshold: 0,   gap: [120, 170], moving: 0.0, crumble: 0.05, platW: [80, 120] },
+    { threshold: 300, gap: [140, 190], moving: 0.15, crumble: 0.12, platW: [70, 110]  },
+    { threshold: 600, gap: [160, 215], moving: 0.25, crumble: 0.18, platW: [60, 100]  },
+    { threshold: 800, gap: [175, 230], moving: 0.35, crumble: 0.22, platW: [55, 90]  },
   ];
 
   // ──────────────────────────────────────────────────────
@@ -600,7 +600,7 @@ const C = {
   // ──────────────────────────────────────────────────────
   //  GAME OVER
   // ──────────────────────────────────────────────────────
-  function gameOver() {
+function gameOver() {
     running = false;
     cancelAnimationFrame(frameId);
 
@@ -622,8 +622,13 @@ const C = {
     const shareMsg = `🔥 I reached ${score} Momentum in PEAK: Rise to the Top. Can you beat me?`;
     document.getElementById('share-text').textContent = shareMsg;
 
-    // Reset submit status
+    // Reset submit form
     document.getElementById('submit-status').textContent = '';
+    document.getElementById('submit-score-btn').textContent = 'SUBMIT SCORE';
+    document.getElementById('submit-score-btn').disabled    = false;
+    document.getElementById('submit-score-btn').style.display = '';
+    document.getElementById('nickname-input').style.display  = '';
+    document.querySelector('.form-label').style.display      = '';
     document.getElementById('nickname-form').classList.remove('hidden');
     document.getElementById('nearby-players').classList.add('hidden');
 
@@ -634,12 +639,13 @@ const C = {
   // ──────────────────────────────────────────────────────
   //  SHARE
   // ──────────────────────────────────────────────────────
-  function copyShareText() {
-    const msg = `🔥 I reached ${score} Momentum in PEAK: Rise to the Top. Can you beat me?`;
+function copyShareText() {
+    const displayMsg = `🔥 I reached ${score} Momentum in PEAK: Rise to the Top. Can you beat me?`;
+    const copyMsg    = `${displayMsg} https://peak-game-rho.vercel.app/`;
     const btn = document.getElementById('copy-btn');
 
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(msg).then(() => {
+      navigator.clipboard.writeText(copyMsg).then(() => {
         btn.classList.add('copy-feedback');
         btn.textContent = '✓ Copied!';
         setTimeout(() => {
@@ -648,9 +654,8 @@ const C = {
         }, 2000);
       });
     } else {
-      // Fallback: select text
       const el = document.createElement('textarea');
-      el.value = msg;
+      el.value = copyMsg;
       el.style.position = 'fixed';
       el.style.opacity  = '0';
       document.body.appendChild(el);
@@ -703,8 +708,12 @@ const C = {
       status.textContent = '✓ Score submitted!';
       status.className   = 'submit-status';
       btn.textContent    = 'Submitted ✓';
+      btn.disabled       = true;
 
-      document.getElementById('nickname-form').classList.add('hidden');
+      // Hide only the form inputs, not the whole container
+      document.getElementById('nickname-input').style.display  = 'none';
+      document.getElementById('submit-score-btn').style.display = 'none';
+      document.querySelector('.form-label').style.display       = 'none';
 
       // Reload leaderboard
       await loadLeaderboard();
@@ -770,9 +779,10 @@ const C = {
       tbody.innerHTML = '';
       const medals = ['🥇', '🥈', '🥉'];
 
-      scores.forEach((entry, i) => {
+scores.forEach((entry, i) => {
         const rank = i + 1;
         const tr   = document.createElement('tr');
+        if (i >= 5) tr.classList.add('lb-hidden-row');
         tr.innerHTML = `
           <td><span class="rank-num">${rank <= 3 ? `<span class="rank-medal">${medals[i]}</span>` : rank}</span></td>
           <td>${escapeHtml(entry.name)}</td>
@@ -781,6 +791,18 @@ const C = {
         `;
         tbody.appendChild(tr);
       });
+
+      table.classList.remove('hidden');
+
+      const expandBtn = document.getElementById('lb-expand-btn');
+      if (scores.length > 5) {
+        expandBtn.classList.remove('hidden');
+        expandBtn.textContent = `SHOW ALL ${scores.length} ↓`;
+        expandBtn.onclick = () => {
+          document.querySelectorAll('.lb-hidden-row').forEach(r => r.style.display = '');
+          expandBtn.classList.add('hidden');
+        };
+      }
 
       table.classList.remove('hidden');
     } catch (err) {
