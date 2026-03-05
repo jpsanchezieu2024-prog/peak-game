@@ -11,9 +11,9 @@
   // ──────────────────────────────────────────────────────
   const CANVAS_W = 480;
   const CANVAS_H = 600;
-  const GRAVITY   = 1.75;
+  const GRAVITY   = 1.6;
   const JUMP_VEL  = -35;
-  const MOVE_SPD  = 15;
+  const MOVE_SPD  = 17.5;
   const PLAT_H    = 12;
   const PLAYER_W  = 70;
   const PLAYER_H  = 90;
@@ -761,10 +761,12 @@ function copyShareText() {
     const table   = document.getElementById('lb-table');
     const empty   = document.getElementById('lb-empty');
     const tbody   = document.getElementById('lb-body');
+    const expandBtn = document.getElementById('lb-expand-btn');
 
     loading.classList.remove('hidden');
     table.classList.add('hidden');
     empty.classList.add('hidden');
+    expandBtn.classList.add('hidden');
 
     try {
       const scores = await getTopScores(25);
@@ -779,7 +781,7 @@ function copyShareText() {
       tbody.innerHTML = '';
       const medals = ['🥇', '🥈', '🥉'];
 
-scores.forEach((entry, i) => {
+      scores.forEach((entry, i) => {
         const rank = i + 1;
         const tr   = document.createElement('tr');
         if (i >= 5) tr.classList.add('lb-hidden-row');
@@ -794,7 +796,6 @@ scores.forEach((entry, i) => {
 
       table.classList.remove('hidden');
 
-      const expandBtn = document.getElementById('lb-expand-btn');
       if (scores.length > 5) {
         expandBtn.classList.remove('hidden');
         expandBtn.textContent = `SHOW ALL ${scores.length} ↓`;
@@ -804,13 +805,11 @@ scores.forEach((entry, i) => {
         };
       }
 
-      table.classList.remove('hidden');
     } catch (err) {
       loading.textContent = 'Could not load leaderboard.';
       console.error('LB load error:', err);
     }
   }
-
   // ──────────────────────────────────────────────────────
   //  HELPERS
   // ──────────────────────────────────────────────────────
