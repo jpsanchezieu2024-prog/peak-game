@@ -13,7 +13,7 @@
   const CANVAS_H = 600;
   const GRAVITY   = 1.6;
   const JUMP_VEL  = -35;
-  const MOVE_SPD  = window.matchMedia('(pointer: coarse)').matches ? 13 : 17.5;
+  const MOVE_SPD  = window.matchMedia('(pointer: coarse)').matches ? 14 : 17.5;
   const PLAT_H    = 12;
   const PLAYER_W  = 70;
   const PLAYER_H  = 90;
@@ -43,12 +43,23 @@ const C = {
 };
 
   // Difficulty bands
-const BANDS = [
-    { threshold: 0,   gap: [120, 170], moving: 0.0, crumble: 0.05, platW: [80, 120] },
-    { threshold: 300, gap: [140, 190], moving: 0.15, crumble: 0.12, platW: [70, 110]  },
-    { threshold: 600, gap: [160, 215], moving: 0.25, crumble: 0.18, platW: [60, 100]  },
-    { threshold: 800, gap: [175, 230], moving: 0.35, crumble: 0.22, platW: [55, 90]  },
+const IS_MOBILE = window.matchMedia('(pointer: coarse)').matches;
+
+  const BANDS_DESKTOP = [
+    { threshold: 0,   gap: [100, 140], moving: 0.0,  crumble: 0.05, platW: [100, 150] },
+    { threshold: 300, gap: [115, 155], moving: 0.15, crumble: 0.12, platW: [90,  135] },
+    { threshold: 600, gap: [130, 175], moving: 0.25, crumble: 0.18, platW: [80,  120] },
+    { threshold: 800, gap: [145, 190], moving: 0.35, crumble: 0.22, platW: [70,  110] },
   ];
+
+  const BANDS_MOBILE = [
+    { threshold: 0,   gap: [130, 180], moving: 0.0,  crumble: 0.04, platW: [70, 100] },
+    { threshold: 300, gap: [155, 205], moving: 0.12, crumble: 0.10, platW: [60,  90] },
+    { threshold: 600, gap: [175, 225], moving: 0.20, crumble: 0.15, platW: [55,  80] },
+    { threshold: 800, gap: [195, 245], moving: 0.30, crumble: 0.20, platW: [50,  70] },
+  ];
+
+  const BANDS = IS_MOBILE ? BANDS_MOBILE : BANDS_DESKTOP;
 
   // ──────────────────────────────────────────────────────
   //  STATE
