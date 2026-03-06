@@ -13,7 +13,7 @@
   const CANVAS_H = 600;
   const GRAVITY   = 1.6;
   const JUMP_VEL  = -35;
-  const MOVE_SPD  = window.matchMedia('(pointer: coarse)').matches ? 14 : 17.5;
+  const MOVE_SPD  = window.matchMedia('(pointer: coarse)').matches ? 12 : 17.5;
   const PLAT_H    = 12;
   const PLAYER_W  = 70;
   const PLAYER_H  = 90;
