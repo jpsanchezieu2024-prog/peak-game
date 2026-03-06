@@ -47,7 +47,7 @@
         </div>
       </div>
 
-      <div class="platform-legend">
+<div class="platform-legend">
         <div class="legend-item">
           <div class="legend-plat static-plat"></div>
           <span>Solid</span>
@@ -62,12 +62,54 @@
         </div>
       </div>
 
+      <div class="powerup-legend">
+        <div class="powerup-legend-item pu-together">
+          <span class="pu-icon">🔗</span>
+          <span class="pu-name">BUILT TOGETHER</span>
+        </div>
+        <div class="powerup-legend-item pu-listen">
+          <span class="pu-icon">📢</span>
+          <span class="pu-name">BUILT TO LISTEN</span>
+        </div>
+        <div class="powerup-legend-item pu-last">
+          <span class="pu-icon">⚡</span>
+          <span class="pu-name">BUILT TO LAST</span>
+        </div>
+      </div>
+
+      <button id="char-select-open-btn" class="btn-ghost">🎭 Choose Climber</button>
       <button id="start-btn" class="btn-primary">START CLIMBING</button>
 
       <p class="version-tag">Built for IE</p>
     </div>
   </div>
 
+<!-- ══════════════════════════════════════════════ -->
+  <!--  CHARACTER SELECT SCREEN                       -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div id="charselect-screen" class="screen">
+    <div class="screen-bg-grid"></div>
+    <div class="charselect-content">
+      <div class="charselect-header">
+        <button id="charselect-back-btn" class="btn-ghost">← Back</button>
+        <h2 class="charselect-title">CHOOSE YOUR CLIMBER</h2>
+        <p class="charselect-subtitle">Unlock new climbers by reaching Momentum milestones</p>
+      </div>
+
+      <div class="char-grid" id="char-grid"></div>
+
+      <div class="charselect-selected">
+        <img id="charselect-preview" src="" alt="Selected character" class="charselect-preview-img" />
+        <div class="charselect-info">
+          <p id="charselect-name" class="charselect-name">Character 1</p>
+          <p id="charselect-status" class="charselect-status">Selected</p>
+        </div>
+      </div>
+
+      <button id="charselect-confirm-btn" class="btn-primary">PLAY AS THIS CLIMBER</button>
+    </div>
+  </div>
+  
   <!-- ══════════════════════════════════════════════ -->
   <!--  GAME SCREEN                                   -->
   <!-- ══════════════════════════════════════════════ -->
@@ -139,6 +181,7 @@
       </div>
 
       <div class="go-actions">
+        <button id="go-char-btn" class="btn-ghost">🎭 Change Climber</button>
         <button id="go-leaderboard-btn" class="btn-ghost">VIEW LEADERBOARD ↓</button>
       </div>
     </div>
