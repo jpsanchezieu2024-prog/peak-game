@@ -66,6 +66,7 @@ const CHARACTERS = [
   ];
 
   let selectedCharId = parseInt(localStorage.getItem('peak_char') || '1');
+  localStorage.removeItem('peak_unlocked');
   let unlockedChars  = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   const charImages = {};
@@ -582,7 +583,7 @@ const stages = [
   }
 
   // ── RENDER ────────────────────────────────────────────
-  function render() {
+function render() {
     const lw = canvas._lw||CANVAS_W;
     const lh = canvas._lh||CANVAS_H;
 
@@ -650,8 +651,16 @@ const stages = [
 
     for (let i=0;i<player.trail.length;i++) {
       const t=player.trail[i]; const tY=t.y-cameraY;
-      ctx.globalAlpha=(t.alpha*(1-i/player.trail.length))*0.3;
-      ctx.drawImage(getSelectedImage(),t.x,tY,PLAYER_W,PLAYER_H);
+      const alp=(t.alpha*(1-i/player.trail.length))*0.3;
+      ctx.globalAlpha=alp;
+      ctx.save();
+      if (player.vx > 0) {
+        ctx.scale(-1, 1);
+        ctx.drawImage(getSelectedImage(), -(t.x + PLAYER_W), tY, PLAYER_W, PLAYER_H);
+      } else {
+        ctx.drawImage(getSelectedImage(), t.x, tY, PLAYER_W, PLAYER_H);
+      }
+      ctx.restore();
     }
     ctx.globalAlpha=1;
 
@@ -659,9 +668,16 @@ const stages = [
     ctx.shadowBlur=20; ctx.shadowColor=C.playerGlow; ctx.fillStyle=C.playerGlow;
     ctx.beginPath(); ctx.ellipse(player.x+PLAYER_W/2,pScreenY+PLAYER_H+2,22,8,0,0,Math.PI*2); ctx.fill();
     ctx.shadowBlur=0;
-    ctx.drawImage(getSelectedImage(),player.x,pScreenY,PLAYER_W,PLAYER_H);
-  }
 
+    ctx.save();
+    if (player.vx > 0) {
+      ctx.scale(-1, 1);
+      ctx.drawImage(getSelectedImage(), -(player.x + PLAYER_W), pScreenY, PLAYER_W, PLAYER_H);
+    } else {
+      ctx.drawImage(getSelectedImage(), player.x, pScreenY, PLAYER_W, PLAYER_H);
+    }
+    ctx.restore();
+  }
   // ── GAME LOOP ─────────────────────────────────────────
   function gameLoop(ts) {
     if (!running) return;
