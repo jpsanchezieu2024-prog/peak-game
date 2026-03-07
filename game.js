@@ -54,15 +54,15 @@
 
   // ── CHARACTER SYSTEM ──────────────────────────────────
 const CHARACTERS = [
-    { id: 1, name: 'Climber 1', file: 'char1.png', unlock: 0    },
-    { id: 2, name: 'Climber 2', file: 'char2.png', unlock: 0  },
-    { id: 3, name: 'Climber 3', file: 'char3.png', unlock: 0  },
-    { id: 4, name: 'Climber 4', file: 'char4.png', unlock: 0  },
-    { id: 5, name: 'Climber 5', file: 'char5.png', unlock: 0  },
-    { id: 6, name: 'Climber 6', file: 'char6.png', unlock: 0 },
-    { id: 7, name: 'Climber 7', file: 'char7.png', unlock: 0 },
-    { id: 8, name: 'Climber 8', file: 'char8.png', unlock: 0 },
-    { id: 9, name: 'Climber 9', file: 'char9.png', unlock: 0    },
+    { id: 1, name: 'Peaky', file: 'char1.png', unlock: 0    },
+    { id: 2, name: 'Juan Pablo', file: 'char2.png', unlock: 0  },
+    { id: 3, name: 'Khadija', file: 'char3.png', unlock: 0  },
+    { id: 4, name: 'Shaun', file: 'char4.png', unlock: 0  },
+    { id: 5, name: 'Barnabas', file: 'char5.png', unlock: 0  },
+    { id: 6, name: 'Alfredo', file: 'char6.png', unlock: 0 },
+    { id: 7, name: 'Stela', file: 'char7.png', unlock: 0 },
+    { id: 8, name: 'Sienna', file: 'char8.png', unlock: 0 },
+    { id: 9, name: 'IE Tower', file: 'char9.png', unlock: 0    },
   ];
 
   let selectedCharId = parseInt(localStorage.getItem('peak_char') || '1');
