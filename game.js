@@ -723,7 +723,7 @@ function render() {
     if (isNewBest) badge.classList.remove('hidden');
     else           badge.classList.add('hidden');
 
-    const shareMsg = 'I reached ' + score + ' Momentum in PEAK: Rise to the Top. Can you beat me?';
+    const shareMsg = 'I reached ' + score + '🔥 Momentum in PEAK: Rise to the Top. Can you beat me?';
     document.getElementById('share-text').textContent = shareMsg;
 
     document.getElementById('submit-status').textContent         = '';
