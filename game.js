@@ -18,6 +18,8 @@
   const PT_STATIC  = 0;
   const PT_MOVING  = 1;
   const PT_CRUMBLE = 2;
+  
+  
 
   const C = {
     bg:              '#f5efe6',
@@ -103,6 +105,8 @@ const CHARACTERS = [
   let activePowerup     = null;
   let powerupTimer      = 0;
   let scoreMultiplier   = 1;
+  let bonusScore        = 0;
+  let highestYAtBonus   = 0;
   let shieldActive      = false;
   let lastPowerupSpawnY = 0;
 
@@ -127,8 +131,10 @@ const CHARACTERS = [
     const def   = POWERUP_DEFS[type];
     activePowerup = type;
     if (type === PU_LISTEN) {
-      scoreMultiplier = 2;
-      powerupTimer    = def.duration;
+      scoreMultiplier  = 2;
+      powerupTimer     = def.duration;
+      highestYAtBonus  = highestY;
+      bonusScore       = 0;
     } else if (type === PU_TOGETHER) {
       powerupTimer = def.duration;
     } else if (type === PU_LAST) {
@@ -164,6 +170,7 @@ const CHARACTERS = [
     scoreMultiplier = 1;
     shieldActive    = false;
     powerupTimer    = 0;
+    highestYAtBonus = 0;
     showPowerupHUD(null);
   }
 
@@ -410,7 +417,7 @@ const stages = [
   function startGame() {
     showScreen('game-screen');
     resizeCanvas();
-    score=0; cameraY=0; highestY=0; particles=[]; powerups=[]; lastPowerupSpawnY=0; running=true;
+    score=0; cameraY=0; highestY=0; particles=[]; powerups=[]; lastPowerupSpawnY=0; running=true; bonusScore=0; highestYAtBonus=0;
     clearPowerup();
     const lw = canvas._lw||CANVAS_W; const lh = canvas._lh||CANVAS_H;
     player.x=lw/2-PLAYER_W/2; player.y=lh-250; player.vx=0; player.vy=0; player.onGround=false; player.trail=[];
@@ -526,7 +533,15 @@ const stages = [
 
     const initialBaseline = (canvas._lh||CANVAS_H) - 120;
     const rise            = initialBaseline - highestY;
-    score = Math.max(0, Math.floor((rise/3) * scoreMultiplier));
+    const baseScore       = Math.max(0, Math.floor(rise / 3));
+
+    if (activePowerup === PU_LISTEN) {
+      // Track extra points earned only during the buff
+      const riseduringBuff = highestYAtBonus - highestY;
+      bonusScore = Math.max(0, Math.floor(riseduringBuff / 3));
+    }
+
+    score = baseScore + bonusScore;
 
     if (activePowerup && powerupTimer > 0) {
       powerupTimer -= dt;
