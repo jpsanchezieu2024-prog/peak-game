@@ -65,7 +65,7 @@ const CHARACTERS = [
     { id: 7, name: 'Stela', file: 'char7.png', unlock: 0 },
     { id: 8, name: 'Sienna', file: 'char8.png', unlock: 0 },
     { id: 9, name: 'IE Tower', file: 'char9.png', unlock: 0    },
-    { id: 9, name: 'Segovia Campus', file: 'char10.png', unlock: 0    }
+    { id: 10, name: 'Segovia Campus', file: 'char10.png', unlock: 0    }
   ];
 
   let selectedCharId = parseInt(localStorage.getItem('peak_char') || '1');
