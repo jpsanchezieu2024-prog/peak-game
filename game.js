@@ -65,11 +65,12 @@ const CHARACTERS = [
     { id: 7, name: 'Stela', file: 'char7.png', unlock: 0 },
     { id: 8, name: 'Sienna', file: 'char8.png', unlock: 0 },
     { id: 9, name: 'IE Tower', file: 'char9.png', unlock: 0    },
+    { id: 9, name: 'Segovia Campus', file: 'char10.png', unlock: 0    }
   ];
 
   let selectedCharId = parseInt(localStorage.getItem('peak_char') || '1');
   localStorage.removeItem('peak_unlocked');
-  let unlockedChars  = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  let unlockedChars  = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   const charImages = {};
   CHARACTERS.forEach(c => {
@@ -757,7 +758,7 @@ function render() {
   // ── SHARE ─────────────────────────────────────────────
   function copyShareText() {
     const shareMsg = 'I reached ' + score + ' Momentum in PEAK: Rise to the Top. Can you beat me?';
-    const copyMsg  = shareMsg + ' https://peak-game-rho.vercel.app/';
+    const copyMsg  = '🔥'+ shareMsg + ' https://peak-game-rho.vercel.app/';
     const btn      = document.getElementById('copy-btn');
     if (navigator.share) {
       navigator.share({ title:'PEAK: Rise to the Top', text:copyMsg }).catch(()=>{});
