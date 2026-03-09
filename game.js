@@ -756,27 +756,110 @@ function render() {
   }
 
   // ── SHARE ─────────────────────────────────────────────
-  function copyShareText() {
-    const shareMsg = 'I reached ' + score + ' Momentum in PEAK: Rise to the Top. Can you beat me?';
-    const copyMsg  = '🔥'+ shareMsg + ' https://peak-game-rho.vercel.app/';
-    const btn      = document.getElementById('copy-btn');
-    if (navigator.share) {
-      navigator.share({ title:'PEAK: Rise to the Top', text:copyMsg }).catch(()=>{});
-      return;
-    }
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(copyMsg).then(() => {
-        btn.classList.add('copy-feedback'); btn.textContent='Copied!';
-        setTimeout(() => {
-          btn.classList.remove('copy-feedback');
-          btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Share Your Score';
-        }, 2000);
-      });
-    } else {
-      const el=document.createElement('textarea'); el.value=copyMsg; el.style.position='fixed'; el.style.opacity='0';
-      document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
-      btn.textContent='Copied!'; setTimeout(()=>{ btn.textContent='Share Your Score'; },2000);
-    }
+function copyShareText() {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Generating...';
+    btn.disabled = true;
+
+    // Build the share image on a canvas
+    const shareCanvas  = document.createElement('canvas');
+    shareCanvas.width  = 1080;
+    shareCanvas.height = 1080;
+    const sc           = shareCanvas.getContext('2d');
+
+    // Background
+    sc.fillStyle = '#f5efe6';
+    sc.fillRect(0, 0, 1080, 1080);
+
+    // Top accent bar
+    sc.fillStyle = '#97252C';
+    sc.fillRect(0, 0, 1080, 12);
+
+    // Draw logo, then rest of image
+    const logo    = new Image();
+    logo.crossOrigin = 'anonymous';
+    logo.onload = () => {
+      // Logo centered
+      const logoSize = 220;
+      sc.drawImage(logo, (1080 - logoSize) / 2, 80, logoSize, logoSize);
+
+      // Game title
+      sc.fillStyle    = '#97252C';
+      sc.font         = 'bold 120px serif';
+      sc.textAlign    = 'center';
+      sc.textBaseline = 'middle';
+      sc.fillText('PEAK', 540, 400);
+
+      // Subtitle
+      sc.fillStyle = '#888';
+      sc.font      = '36px monospace';
+      sc.fillText('Rise to the Top', 540, 470);
+
+      // Divider
+      sc.strokeStyle = '#97252C';
+      sc.lineWidth   = 3;
+      sc.beginPath();
+      sc.moveTo(340, 530); sc.lineTo(740, 530);
+      sc.stroke();
+
+      // Score label
+      sc.fillStyle = '#888';
+      sc.font      = '40px monospace';
+      sc.fillText('MOMENTUM REACHED', 540, 600);
+
+      // Score number
+      sc.fillStyle = '#97252C';
+      sc.font      = 'bold 200px serif';
+      sc.fillText(score, 540, 760);
+
+      // Bottom tagline
+      sc.fillStyle = '#888';
+      sc.font      = '32px monospace';
+      sc.fillText('Can you beat me?  peak-game-rho.vercel.app', 540, 900);
+
+      // Bottom accent bar
+      sc.fillStyle = '#97252C';
+      sc.fillRect(0, 1068, 1080, 12);
+
+      // Export and share
+      shareCanvas.toBlob(blob => {
+        const file    = new File([blob], 'peak-score.png', { type: 'image/png' });
+        const textMsg = '🔥 I reached ' + score + ' Momentum in PEAK: Rise to the Top. Can you beat me? https://peak-game-rho.vercel.app/';
+
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({
+            title: 'PEAK: Rise to the Top',
+            text:  textMsg,
+            files: [file],
+          }).catch(() => {}).finally(() => {
+            btn.disabled    = false;
+            btn.textContent = 'Share Your Score';
+          });
+        } else {
+          // Fallback: download the image + copy text
+          const url = URL.createObjectURL(blob);
+          const a   = document.createElement('a');
+          a.href     = url;
+          a.download = 'peak-score.png';
+          a.click();
+          URL.revokeObjectURL(url);
+
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(textMsg);
+          }
+          btn.disabled    = false;
+          btn.textContent = 'Downloaded!';
+          setTimeout(() => { btn.textContent = 'Share Your Score'; }, 2000);
+        }
+      }, 'image/png');
+    };
+
+    logo.onerror = () => {
+      // If logo fails to load just skip it and proceed without
+      logo.onload();
+    };
+
+    logo.src = 'logo.png';
   }
 
   // ── SCORE SUBMISSION ──────────────────────────────────
