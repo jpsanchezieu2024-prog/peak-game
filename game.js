@@ -380,9 +380,7 @@ const stages = [
       buildCharSelectScreen(); showScreen('charselect-screen');
       document.getElementById('charselect-back-btn').onclick = () => showScreen('gameover-screen');
     });
-    document.getElementById('go-leaderboard-btn').addEventListener('click', () => {
-      document.getElementById('leaderboard-section').scrollIntoView({ behavior:'smooth' });
-    });
+
     document.getElementById('copy-btn').addEventListener('click', copyShareText);
     document.getElementById('submit-score-btn').addEventListener('click', handleScoreSubmit);
     document.getElementById('refresh-lb-btn').addEventListener('click', () => loadLeaderboard());
@@ -756,27 +754,47 @@ function render() {
   }
 
   // ── SHARE ─────────────────────────────────────────────
-  function copyShareText() {
-    const shareMsg = 'I reached ' + score + ' Momentum in PEAK: Rise to the Top. Can you beat me?';
-    const copyMsg  = '🔥'+ shareMsg + ' https://peak-game-rho.vercel.app/';
-    const btn      = document.getElementById('copy-btn');
+function copyShareText() {
+    const btn     = document.getElementById('copy-btn');
+    const textMsg = '🔥 I reached ' + score + ' Momentum in PEAK: Rise to the Top. Can you beat me? https://peak-game-rho.vercel.app/';
+
     if (navigator.share) {
-      navigator.share({ title:'PEAK: Rise to the Top', text:copyMsg }).catch(()=>{});
-      return;
-    }
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(copyMsg).then(() => {
-        btn.classList.add('copy-feedback'); btn.textContent='Copied!';
-        setTimeout(() => {
-          btn.classList.remove('copy-feedback');
-          btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Share Your Score';
-        }, 2000);
-      });
+      navigator.share({ title: 'PEAK: Rise to the Top', text: textMsg })
+        .then(() => {})
+        .catch(() => {
+          // share failed, fall back to clipboard
+          doCopy(btn, textMsg);
+        });
     } else {
-      const el=document.createElement('textarea'); el.value=copyMsg; el.style.position='fixed'; el.style.opacity='0';
-      document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
-      btn.textContent='Copied!'; setTimeout(()=>{ btn.textContent='Share Your Score'; },2000);
+      doCopy(btn, textMsg);
     }
+  }
+
+  function doCopy(btn, text) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text)
+        .then(() => { showCopied(btn); })
+        .catch(() => { forceCopy(btn, text); });
+    } else {
+      forceCopy(btn, text);
+    }
+  }
+
+  function forceCopy(btn, text) {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.style.position = 'fixed';
+    el.style.opacity  = '0';
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showCopied(btn);
+  }
+
+  function showCopied(btn) {
+    btn.textContent = 'Copied! ✓';
+    setTimeout(() => { btn.textContent = 'Share Your Score'; }, 2000);
   }
 
   // ── SCORE SUBMISSION ──────────────────────────────────
