@@ -349,6 +349,11 @@ const stages = [
     canvas = document.getElementById('game-canvas');
     ctx    = canvas.getContext('2d');
     resizeCanvas();
+    
+    // Load Montserrat for share card
+    const montserrat = new FontFace('Montserrat', 'url(https://fonts.gstatic.com/s/montserrat/v26/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aXo.woff2)');
+    montserrat.load().then(f => document.fonts.add(f)).catch(() => {});}
+    
     window.addEventListener('resize', resizeCanvas);
 
     window.addEventListener('keydown', e => {
@@ -754,7 +759,7 @@ function render() {
     loadNearbyPlayers(score);
   }
 
-// ── SHARE ─────────────────────────────────────────────
+
 // ── SHARE ─────────────────────────────────────────────
   function copyShareText() {
     const btn     = document.getElementById('copy-btn');
@@ -802,7 +807,7 @@ function render() {
 
       if (hasLogo) s.drawImage(logoImg, 440, 50, 200, 200);
 
-      s.fillStyle = '#97252C'; s.font = 'bold 128px Georgia, serif';
+      s.fillStyle = '#97252C'; s.font = 'bold 128px Montserrat, Georgia, serif';
       s.textAlign = 'center'; s.textBaseline = 'middle';
       s.fillText('PEAK', 540, 320 + midY);
 
@@ -815,16 +820,12 @@ function render() {
       s.fillStyle = '#888'; s.font = '38px monospace';
       s.fillText('MOMENTUM REACHED', 540, 530 + midY);
 
-      s.fillStyle = '#97252C'; s.font = 'bold 200px Georgia, serif';
+      s.fillStyle = '#97252C';
+      s.font      = 'bold 200px Montserrat, Georgia, serif';
       s.fillText(score, 540, 700 + midY);
 
-      const charImg = getSelectedImage();
-      if (charImg && charImg.complete && charImg.naturalWidth > 0) {
-        s.drawImage(charImg, 440, 760 + midY, 200, 200);
-      }
-
       s.fillStyle = '#aaa'; s.font = '28px monospace';
-      s.fillText('peak-game-rho.vercel.app', 540, 980);
+      s.fillText('Vote PEAK for SG', 540, 980);
 
       s.fillStyle = '#97252C';
       s.fillRect(0, 1066, 1080, 14);
