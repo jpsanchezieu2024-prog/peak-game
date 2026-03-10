@@ -352,7 +352,7 @@ const stages = [
     
     // Load Montserrat for share card
     const montserrat = new FontFace('Montserrat', 'url(https://fonts.gstatic.com/s/montserrat/v26/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aXo.woff2)');
-    montserrat.load().then(f => document.fonts.add(f)).catch(() => {});}
+    montserrat.load().then(f => document.fonts.add(f)).catch(() => {});
     
     window.addEventListener('resize', resizeCanvas);
 
