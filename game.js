@@ -275,10 +275,10 @@ const CHARACTERS = [
   function getBackgroundColor(sc) {
 const stages = [
       [0,    245,239,230],
-      [1500,  220,210,195],
-      [3500, 190,175,165],
-      [7500, 160,140,130],
-      [12500, 130,100, 90],
+      [3500,  220,210,195],
+      [8000, 190,175,165],
+      [15000, 160,140,130],
+      [25000, 130,100, 90],
     ];
     for (let i = 0; i < stages.length - 1; i++) {
       const [s1,r1,g1,b1] = stages[i];
@@ -812,7 +812,7 @@ function render() {
       s.fillText('PEAK', 540, 320 + midY);
 
       s.fillStyle = '#888'; s.font = '36px monospace';
-      s.fillText('Elevate the Experience', 540, 400 + midY);
+      s.fillText('Rise to the Top', 540, 400 + midY);
 
       s.strokeStyle = '#97252C'; s.lineWidth = 3;
       s.beginPath(); s.moveTo(300, 455 + midY); s.lineTo(780, 455 + midY); s.stroke();
