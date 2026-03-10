@@ -755,109 +755,117 @@ function render() {
   }
 
 // ── SHARE ─────────────────────────────────────────────
+// ── SHARE ─────────────────────────────────────────────
   function copyShareText() {
     const btn     = document.getElementById('copy-btn');
     const textMsg = '🔥 I reached ' + score + ' Momentum in PEAK: Rise to the Top. Can you beat me? https://peak-game-rho.vercel.app/';
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (!isMobile) {
+      // Desktop: just copy text
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(textMsg).then(() => {
+          btn.textContent = 'Copied! ✓';
+          setTimeout(() => { btn.textContent = 'Share Your Score 🔥'; }, 2000);
+        }).catch(() => forceCopy());
+      } else {
+        forceCopy();
+      }
+      function forceCopy() {
+        const el = document.createElement('textarea');
+        el.value = textMsg; el.style.position = 'fixed'; el.style.opacity = '0';
+        document.body.appendChild(el); el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        btn.textContent = 'Copied! ✓';
+        setTimeout(() => { btn.textContent = 'Share Your Score 🔥'; }, 2000);
+      }
+      return;
+    }
+
+    // Mobile: generate image + share
     btn.textContent = 'Generating...';
     btn.disabled    = true;
 
-    function render(logoImg) {
-      const sc   = document.createElement('canvas');
-      sc.width   = 1080;
-      sc.height  = 1080;
-      const s    = sc.getContext('2d');
+    function drawCard(logoImg) {
+      const sc  = document.createElement('canvas');
+      sc.width  = 1080;
+      sc.height = 1080;
+      const s   = sc.getContext('2d');
       const hasLogo = !!logoImg;
-      const midY    = hasLogo ? 60 : 0; // offset when no logo
+      const midY    = hasLogo ? 60 : 0;
 
-      // Background
       s.fillStyle = '#f5efe6';
       s.fillRect(0, 0, 1080, 1080);
-
-      // Top bar
       s.fillStyle = '#97252C';
       s.fillRect(0, 0, 1080, 14);
 
-      // Logo
       if (hasLogo) s.drawImage(logoImg, 440, 50, 200, 200);
 
-      // PEAK
-      s.fillStyle    = '#97252C';
-      s.font         = 'bold 128px Georgia, serif';
-      s.textAlign    = 'center';
-      s.textBaseline = 'middle';
+      s.fillStyle = '#97252C'; s.font = 'bold 128px Georgia, serif';
+      s.textAlign = 'center'; s.textBaseline = 'middle';
       s.fillText('PEAK', 540, 320 + midY);
 
-      // Subtitle
-      s.fillStyle = '#888';
-      s.font      = '36px monospace';
+      s.fillStyle = '#888'; s.font = '36px monospace';
       s.fillText('Rise to the Top', 540, 400 + midY);
 
-      // Divider
-      s.strokeStyle = '#97252C';
-      s.lineWidth   = 3;
-      s.beginPath();
-      s.moveTo(300, 455 + midY);
-      s.lineTo(780, 455 + midY);
-      s.stroke();
+      s.strokeStyle = '#97252C'; s.lineWidth = 3;
+      s.beginPath(); s.moveTo(300, 455 + midY); s.lineTo(780, 455 + midY); s.stroke();
 
-      // Label
-      s.fillStyle = '#888';
-      s.font      = '38px monospace';
+      s.fillStyle = '#888'; s.font = '38px monospace';
       s.fillText('MOMENTUM REACHED', 540, 530 + midY);
 
-      // Score
-      s.fillStyle = '#97252C';
-      s.font      = 'bold 200px Georgia, serif';
+      s.fillStyle = '#97252C'; s.font = 'bold 200px Georgia, serif';
       s.fillText(score, 540, 700 + midY);
 
-      // Tagline
-      s.fillStyle = '#aaa';
-      s.font      = '30px monospace';
-      s.fillText('Can you beat me?', 540, 840 + midY);
-      s.fillText('peak-game-rho.vercel.app', 540, 885 + midY);
+      const charImg = getSelectedImage();
+      if (charImg && charImg.complete && charImg.naturalWidth > 0) {
+        s.drawImage(charImg, 440, 760 + midY, 200, 200);
+      }
 
-      // Bottom bar
+      s.fillStyle = '#aaa'; s.font = '28px monospace';
+      s.fillText('peak-game-rho.vercel.app', 540, 980);
+
       s.fillStyle = '#97252C';
       s.fillRect(0, 1066, 1080, 14);
 
       return sc;
     }
 
-    function share(sc) {
-      sc.toBlob(blob => {
-        if (!blob) { fallback(); return; }
-        const file = new File([blob], 'peak-score.png', { type: 'image/png' });
-        btn.disabled    = false;
-        btn.textContent = 'Share Your Score 🔥';
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          navigator.share({ title: 'PEAK', text: textMsg, files: [file] })
-            .then(() => {})
-            .catch(() => {
-              if (navigator.clipboard) navigator.clipboard.writeText(textMsg).catch(() => {});
-            });
-        } else if (navigator.share) {
-          navigator.share({ title: 'PEAK', text: textMsg }).catch(() => {});
-        } else {
-          const url = URL.createObjectURL(blob);
-          const a   = document.createElement('a');
-          a.href = url; a.download = 'peak-score.png'; a.click();
-          URL.revokeObjectURL(url);
-          if (navigator.clipboard) navigator.clipboard.writeText(textMsg).catch(() => {});
-        }
-      }, 'image/png');
+    function doShare(sc) {
+      try {
+        sc.toBlob(blob => {
+          if (!blob) { fallback(); return; }
+          btn.disabled = false; btn.textContent = 'Share Your Score 🔥';
+          const file = new File([blob], 'peak-score.png', { type: 'image/png' });
+          if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({ title: 'PEAK', text: textMsg, files: [file] }).catch(() => fallback());
+          } else if (navigator.share) {
+            navigator.share({ title: 'PEAK', text: textMsg }).catch(() => {});
+          } else {
+            fallback();
+          }
+        }, 'image/png');
+      } catch(e) { fallback(); }
     }
 
     function fallback() {
-      btn.disabled    = false;
-      btn.textContent = 'Share Your Score 🔥';
+      btn.disabled = false; btn.textContent = 'Share Your Score 🔥';
       if (navigator.clipboard) navigator.clipboard.writeText(textMsg).catch(() => {});
     }
 
-    const logo       = new Image();
+    let handled = false;
+    function handle(img) {
+      if (handled) return; handled = true;
+      doShare(drawCard(img));
+    }
+
+    const logo = new Image();
     logo.crossOrigin = 'anonymous';
-    logo.onload      = () => { share(render(logo)); };
-    logo.onerror     = () => { share(render(null)); };
-    logo.src         = 'logo.png?' + Date.now();
+    logo.onload  = () => handle(logo);
+    logo.onerror = () => handle(null);
+    setTimeout(() => handle(null), 3000);
+    logo.src = 'logo.png?' + Date.now();
   }
 
   // ── SCORE SUBMISSION ──────────────────────────────────
