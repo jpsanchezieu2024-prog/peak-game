@@ -812,7 +812,7 @@ function render() {
       s.fillText('PEAK', 540, 320 + midY);
 
       s.fillStyle = '#888'; s.font = '36px monospace';
-      s.fillText('Rise to the Top', 540, 400 + midY);
+      s.fillText('Elevate the Experience', 540, 400 + midY);
 
       s.strokeStyle = '#97252C'; s.lineWidth = 3;
       s.beginPath(); s.moveTo(300, 455 + midY); s.lineTo(780, 455 + midY); s.stroke();
