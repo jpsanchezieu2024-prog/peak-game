@@ -887,8 +887,7 @@ function render() {
       document.getElementById('nickname-input').style.display  ='none';
       document.getElementById('submit-score-btn').style.display='none';
       document.querySelector('.form-label').style.display      ='none';
-      await loadLeaderboard();
-      await loadNearbyPlayers(score);
+      await loadLeaderboard(true); // force refresh after submit
     } catch(err) {
       console.error('Score submit error:',err);
       status.textContent='Could not submit. Check your connection.'; status.className='submit-status error';
@@ -914,13 +913,13 @@ function render() {
   }
 
   // ── LEADERBOARD ───────────────────────────────────────
-  async function loadLeaderboard() {
+  async function loadLeaderboard(force = false) { 
     const loading=document.getElementById('lb-loading'); const table=document.getElementById('lb-table');
     const empty=document.getElementById('lb-empty'); const tbody=document.getElementById('lb-body');
     const expandBtn=document.getElementById('lb-expand-btn');
     loading.classList.remove('hidden'); table.classList.add('hidden'); empty.classList.add('hidden'); expandBtn.classList.add('hidden');
     try {
-      const scores = await getTopScores(25);
+      const scores = await getTopScores(25, force);
       loading.classList.add('hidden');
       if (!scores||scores.length===0) { empty.classList.remove('hidden'); return; }
       tbody.innerHTML='';
