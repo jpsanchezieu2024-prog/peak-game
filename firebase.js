@@ -98,55 +98,78 @@ async function getNearbyScores(myScore) {
   if (!firebaseReady) return [];
 
   try {
-    // Query 1: fetch top 10
-    const topSnap = await db.collection(SCORES_COLLECTION)
-      .orderBy('score', 'desc')
-      .limit(10)
+    // Count scores strictly above player to get their rank
+    const aboveSnap = await db.collection(SCORES_COLLECTION)
+      .where('score', '>', myScore)
       .get();
 
-    const entries = topSnap.docs.map((d, i) => ({
+    const myRank = aboveSnap.size + 1;
+
+    // Get top 2
+    const top2Snap = await db.collection(SCORES_COLLECTION)
+      .orderBy('score', 'desc')
+      .limit(2)
+      .get();
+
+    const top2 = top2Snap.docs.map((d, i) => ({
       rank:  i + 1,
       name:  d.data().name,
       score: d.data().score,
       isYou: false,
     }));
 
-    const lowestTopScore = entries.length > 0 ? entries[entries.length - 1].score : 0;
-
-    // If player is within top 10 range, no second query needed
-    if (myScore >= lowestTopScore || entries.length < 10) {
-      const youRank   = entries.filter(e => e.score > myScore).length + 1;
-      const youEntry  = { rank: youRank, name: 'YOU', score: myScore, isYou: true };
-      const result    = [...entries];
-      result.splice(youRank - 1, 0, youEntry);
-      result.forEach((e, i) => e.rank = i + 1);
-      return result.slice(0, 6);
+    // If player is in top 2, just show top 5
+    if (myRank <= 2) {
+      const top5Snap = await db.collection(SCORES_COLLECTION)
+        .orderBy('score', 'desc')
+        .limit(5)
+        .get();
+      return top5Snap.docs.map((d, i) => ({
+        rank:  i + 1,
+        name:  d.data().name,
+        score: d.data().score,
+        isYou: i + 1 === myRank,
+      }));
     }
 
-    // Query 2: count scores above player to get their rank
-    const aboveSnap = await db.collection(SCORES_COLLECTION)
-      .where('score', '>', myScore)
-      .get();
-
-    const myRank   = aboveSnap.size + 1;
-    const youEntry = { rank: myRank, name: 'YOU', score: myScore, isYou: true };
-
-    // Find the nearest entry above from what we already fetched
-    const aboveEntries = aboveSnap.docs
+    // Nearest score above player
+    const nearestAbove = aboveSnap.docs
       .map(d => ({ name: d.data().name, score: d.data().score }))
-      .sort((a, b) => a.score - b.score); // ascending = closest above is first
+      .sort((a, b) => a.score - b.score)[0]; // lowest of those above = closest
 
-    const nearestAbove = aboveEntries.length > 0 ? {
+    const aboveEntry = nearestAbove ? {
       rank:  myRank - 1,
-      name:  aboveEntries[0].name,
-      score: aboveEntries[0].score,
+      name:  nearestAbove.name,
+      score: nearestAbove.score,
       isYou: false,
     } : null;
 
-    const result = [...entries.slice(0, 2)];
-    if (nearestAbove) result.push(nearestAbove);
+    // Nearest score below player
+    const belowSnap = await db.collection(SCORES_COLLECTION)
+      .orderBy('score', 'desc')
+      .where('score', '<', myScore)
+      .limit(1)
+      .get();
+
+    const belowEntry = belowSnap.docs.length > 0 ? {
+      rank:  myRank + 1,
+      name:  belowSnap.docs[0].data().name,
+      score: belowSnap.docs[0].data().score,
+      isYou: false,
+    } : null;
+
+    const youEntry = { rank: myRank, name: 'YOU', score: myScore, isYou: true };
+
+    // Build: #1, #2, [separator if gap], above, YOU, below
+    const result = [...top2];
+
+    if (aboveEntry && aboveEntry.rank > 3) {
+      result.push({ rank: '…', name: '', score: '', isSeparator: true });
+    }
+    if (aboveEntry) result.push(aboveEntry);
     result.push(youEntry);
-    result.forEach((e, i) => e.rank = i + 1);
+    if (belowEntry) result.push(belowEntry);
+
     return result;
 
   } catch (err) {
