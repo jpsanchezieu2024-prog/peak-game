@@ -1,6 +1,20 @@
 # PEAK: Rise to the Top
 **A vertical endless platformer for the PEAK Student Government Campaign**
 
+PLAY HERE: https://peak-game-rho.vercel.app/
+
+Left Right, rise to the top
+
+Choose your character
+
+Share your score
+
+
+
+
+
+
+
 ---
 
 ## 📁 Folder Structure
@@ -17,7 +31,7 @@ peak-game/
 
 ---
 
-## 🔥 STEP 1: Firebase Setup
+## STEP 1: Firebase Setup
 
 ### A. Create a Firebase Project
 
@@ -93,7 +107,7 @@ For the nearby-players feature, create a composite index:
 
 ---
 
-## 🧪 STEP 2: Test Locally
+## STEP 2: Test Locally
 
 Because the game uses Firebase (a remote service), you need a local web server — you can't just open `index.html` directly in a browser.
 
@@ -117,7 +131,7 @@ npx serve .
 
 ---
 
-## 🚀 STEP 3: Deploy (Pick One)
+## STEP 3: Deploy (Pick One)
 
 ---
 
@@ -192,7 +206,7 @@ git push
 
 ---
 
-## 🔒 Firebase Security Notes
+## Firebase Security Notes
 
 The security rules in `firestore.rules` enforce:
 
@@ -233,7 +247,7 @@ scores/
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 **Leaderboard shows mock data:**
 → Your Firebase config isn't filled in yet. Open `firebase.js` and paste your real config.
@@ -255,7 +269,7 @@ scores/
 
 ---
 
-## 📈 Optional Improvements
+## Optional Improvements
 
 - **Custom domain:** Point your domain to GitHub Pages or Vercel (both support custom domains for free)
 - **Rate limiting:** Add Firebase App Check to prevent bot submissions
@@ -266,7 +280,7 @@ scores/
 
 ---
 
-## 📄 License
+## License
 
 Built for the PEAK Student Government Campaign.
 Internal/campaign use only.
