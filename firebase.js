@@ -28,7 +28,7 @@ try {
 }
 
 const SCORES_COLLECTION = 'scores';
-const MAX_SCORE         = 99999;
+const MAX_SCORE = 150167;
 
 // ──────────────────────────────────────────────────────
 //  LEADERBOARD CACHE
