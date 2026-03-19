@@ -878,7 +878,7 @@ function render() {
     if (!name) { status.textContent='Please enter a name.'; status.className='submit-status error'; return; }
     name = name.replace(/[^a-zA-Z0-9 _\-]/g,'').substring(0,20).trim();
     if (!name) { status.textContent='Invalid name. Use letters, numbers, spaces.'; status.className='submit-status error'; return; }
-    if (typeof score!=='number'||score<0||score>99999||!Number.isInteger(score)) { status.textContent='Invalid score.'; status.className='submit-status error'; return; }
+    if (typeof score!=='number'||score<0||score>150167||!Number.isInteger(score)) { status.textContent='Invalid score.'; status.className='submit-status error'; return; }
     btn.disabled=true; btn.textContent='Submitting...'; status.textContent=''; status.className='submit-status';
     try {
       await submitScore(name, score);
